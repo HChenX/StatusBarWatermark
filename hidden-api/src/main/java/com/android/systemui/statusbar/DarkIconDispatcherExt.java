@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class DarkIconDispatcherExt {
+    public abstract class Companion {
+        public static int getTint(Collection collection, View view, int i2) {
+            throw new RuntimeException("Stub!");
+        }
+    }
+
     public static final float getDarkIntensity(ArrayList arrayList, View view, float f3) {
         throw new RuntimeException("Stub!");
     }

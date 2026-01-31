@@ -1,8 +1,10 @@
 package com.android.systemui.plugins;
 
 import android.graphics.Rect;
+import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public interface DarkIconDispatcher {
     interface DarkReceiver {
@@ -17,5 +19,9 @@ public interface DarkIconDispatcher {
         default void onLightDarkTintChanged(int lightColor, int darkColor, boolean useTint) {
             throw new RuntimeException("Stub!");
         }
+    }
+
+    static boolean isInAreas(Collection<Rect> collection, View view) {
+        throw new RuntimeException("Stub!");
     }
 }

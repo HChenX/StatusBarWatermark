@@ -2,18 +2,23 @@ package com.hchen.statusbarwatermark.hook.slots;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.statusbar.DarkIconDispatcherExt;
 import com.android.systemui.statusbar.StatusIconDisplayable;
 import com.android.systemui.statusbar.anim.StatusBarIconAnimHelper;
 import com.hchen.statusbarwatermark.data.StatusBarSlots;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 public class StatusBarWatermarkView extends AppCompatTextView implements StatusIconDisplayable {
     private StatusBarIconAnimHelper helper;
@@ -201,16 +206,37 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
         helper.setBlurRadius(blurRadius);
     }
 
-    private void updateLightDarkTint() {
-        if (useTint) {
-            setTextColor(DarkIconDispatcherExt.getTint(areas, this, tint));
-            return;
+    private final boolean hasTargetMethod = Arrays.stream(DarkIconDispatcherExt.class.getDeclaredMethods()).anyMatch(
+        new Predicate<Method>() {
+            @Override
+            public boolean test(Method method) {
+                return TextUtils.equals(method.getName(), "getTint");
+            }
         }
-        setTextColor(
-            DarkIconDispatcherExt.getDarkIntensity(areas, this, darkIntensity) > 0.0f ?
-                darkColor :
-                lightColor
-        );
+    );
+
+    private void updateLightDarkTint() {
+        if (hasTargetMethod) {
+            if (useTint) {
+                setTextColor(DarkIconDispatcherExt.getTint(areas, this, tint));
+                return;
+            }
+            setTextColor(
+                DarkIconDispatcherExt.getDarkIntensity(areas, this, darkIntensity) > 0.0f ?
+                    darkColor :
+                    lightColor
+            );
+        } else {
+            if (useTint) {
+                setTextColor(DarkIconDispatcherExt.Companion.getTint(areas, this, tint));
+                return;
+            }
+            setTextColor(
+                (DarkIconDispatcher.isInAreas(areas, this) ? darkIntensity : 0.0f) > 0.0f ?
+                    darkColor :
+                    lightColor
+            );
+        }
     }
 
     private void updateResources() {
