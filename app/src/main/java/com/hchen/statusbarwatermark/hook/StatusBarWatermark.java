@@ -29,17 +29,20 @@ public class StatusBarWatermark extends HCBase {
 
     @Override
     protected void init() {
-        if (!isRegistered) {
-            isRegistered = true;
-            PrefsTool.prefs().registerOnSharedPreferenceChangeListener(
-                new SharedPreferences.OnSharedPreferenceChangeListener() {
-                    @Override
-                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
-                        updateConfig();
-                        // AndroidLog.logW(TAG, "onSharedPreferenceChanged!! view: " + watermarkWeakHashMap);
+        try {
+            if (!isRegistered) {
+                isRegistered = true;
+                PrefsTool.prefs().registerOnSharedPreferenceChangeListener(
+                    new SharedPreferences.OnSharedPreferenceChangeListener() {
+                        @Override
+                        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
+                            updateConfig();
+                        }
                     }
-                }
-            );
+                );
+            }
+        } catch (Throwable e) {
+            logE(TAG, e);
         }
 
         ClassLoader myClassLoader = new PathClassLoader(HCData.getModulePath(), classLoader);
@@ -100,22 +103,6 @@ public class StatusBarWatermark extends HCBase {
                 }
             }
         );
-    }
-
-    private void updateConfig() {
-        watermarkWeakHashMap.keySet().forEach(new Consumer<TextView>() {
-            @Override
-            public void accept(TextView textView) {
-                if (textView != null) {
-                    textView.post(() -> {
-                        callMethod(textView, "setVisible", ModuleConfig.isShowWatermark());
-                        textView.setText(ModuleConfig.getWatermarkContent());
-                        textView.setTextSize(ModuleConfig.getWatermarkSize());
-                        // AndroidLog.logW(TAG, "Post!! v: " + textView + ", show: " + ModuleConfig.isShowWatermark());
-                    });
-                }
-            }
-        });
 
         @SuppressWarnings("unchecked")
         ArrayList<String> CONTROL_CENTER_BLOCK_LIST = (ArrayList<String>) getStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST");
@@ -130,7 +117,20 @@ public class StatusBarWatermark extends HCBase {
                 setStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST", CONTROL_CENTER_BLOCK_LIST);
             }
         }
+    }
 
-        // AndroidLog.logW(TAG, "UpdateConfig!!");
+    private void updateConfig() {
+        watermarkWeakHashMap.keySet().forEach(new Consumer<TextView>() {
+            @Override
+            public void accept(TextView textView) {
+                if (textView != null) {
+                    textView.post(() -> {
+                        callMethod(textView, "setVisible", ModuleConfig.isShowWatermark());
+                        textView.setText(ModuleConfig.getWatermarkContent());
+                        textView.setTextSize(ModuleConfig.getWatermarkSize());
+                    });
+                }
+            }
+        });
     }
 }

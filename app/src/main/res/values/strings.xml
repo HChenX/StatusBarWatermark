@@ -17,7 +17,7 @@
     <string name="watermark_show_details">控制水印的显示与隐藏状态。此修改实时生效。</string>
 
     <string name="watermark_show_on_control_center">控制中心是否显示水印</string>
-    <string name="watermark_show_on_control_center_details">开启则在下拉控制中心时依然会显示水印，此修改实时生效。</string>
+    <string name="watermark_show_on_control_center_details">开启则在下拉控制中心时依然会显示水印。</string>
 
     <string name="watermark_content">水印内容</string>
     <string name="watermark_content_details">自定义需要显示的水印内容。此修改实时生效。</string>

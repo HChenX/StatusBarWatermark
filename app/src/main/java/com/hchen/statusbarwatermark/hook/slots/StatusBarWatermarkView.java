@@ -25,6 +25,7 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
     private int visibleState;
     private boolean visible;
     private boolean blocked;
+    private boolean deemHide;
     private ArrayList<Rect> areas;
     private float darkIntensity;
     private int tint;
@@ -133,12 +134,12 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
 
     @Override
     public boolean getDeemHide() {
-        return false;
+        return deemHide;
     }
 
     @Override
     public void setDeemHide(boolean deemHide) {
-        // Do Nothing
+        this.deemHide = deemHide;
     }
 
     @Override
@@ -251,6 +252,7 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
             if (helper.removeFlag && getVisibility() == VISIBLE) {
                 visibleState = 2;
                 setRemove(false);
+                deemHide = true;
                 requestLayout();
                 return;
             }
