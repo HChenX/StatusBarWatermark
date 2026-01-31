@@ -6,6 +6,21 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true" />
+        android:supportsRtl="true"
+        android:theme="@style/Theme.StatusBarWatermark">
+
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/hook_app" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="@string/app_name" />
+        <meta-data
+            android:name="xposedsharedprefs"
+            android:value="true" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="93" />
+    </application>
 
 </manifest>

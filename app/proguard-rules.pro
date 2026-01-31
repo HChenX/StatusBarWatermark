@@ -29,3 +29,8 @@
     public static java.lang.String getFramework();
     public static int getVersion();
 }
+-keep class com.hchen.statusbarwatermark.hook.helper.StatusBarIconHolder {*;}
+-keep class com.hchen.statusbarwatermark.hook.slots.StatusBarWatermarkView {
+    public <init>(android.content.Context);
+    public setBlocked(boolean);
+}
