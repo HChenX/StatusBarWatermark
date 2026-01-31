@@ -1,0 +1,55 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+def gprUser = System.getenv("GIT_ACTOR") ?: ""
+def gprKey = System.getenv("GIT_TOKEN") ?: ""
+
+def gprInfoFile = new File(rootProject.projectDir, "local.properties")
+
+if (!gprUser || !gprKey) {
+    if (gprInfoFile.exists()) {
+        def gprInfo = new Properties()
+        gprInfoFile.withInputStream { gprInfo.load(it) }
+
+        gprUser = gprInfo.getProperty("gpr.user") ?: ""
+        gprKey = gprInfo.getProperty("gpr.key") ?: ""
+
+        if (!gprUser || !gprKey) {
+            throw new GradleException("'gpr.user' and 'gpr.key' must be set in 'local.properties'")
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://api.xposed.info/" }
+        maven { url 'https://jitpack.io' }
+        maven {
+            url = uri("https://maven.pkg.github.com/compose-miuix-ui/miuix")
+            credentials {
+                username = gprUser
+                password = gprKey
+            }
+        }
+    }
+}
+
+rootProject.name = "StatusBarWatermark"
+include ':app'
+include ':hidden-api'

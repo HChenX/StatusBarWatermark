@@ -1,0 +1,32 @@
+[versions]
+# android
+agp = "8.13.2"
+kotlin = "2.2.21"
+# xposed
+api = "82"
+hooktool = "v.2.2.6"
+# compose
+appcompat = "1.7.1"
+annotation = "1.9.1"
+composeBom = "2026.01.01"
+activityCompose = "1.12.3"
+foundationAndroid = "1.10.2"
+miuixAndroid = "0.8.0-rc06"
+
+
+[libraries]
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+api = { module = "de.robv.android.xposed:api", version.ref = "api" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+foundation-android = { module = "androidx.compose.foundation:foundation-android", version.ref = "foundationAndroid" }
+hooktool = { module = "com.github.HChenX:HookTool", version.ref = "hooktool" }
+miuix-android = { module = "top.yukonga.miuix.kmp:miuix-android", version.ref = "miuixAndroid" }
+miuix-icons-android = { module = "top.yukonga.miuix.kmp:miuix-icons-android", version.ref = "miuixAndroid" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
