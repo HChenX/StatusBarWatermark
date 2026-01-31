@@ -216,7 +216,7 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
     private void updateResources() {
         int style = getResources().getIdentifier("TextAppearance.StatusBar.NetWorkSpeedNumber", "style", getContext().getPackageName());
         setTextAppearance(style);
-        setTextSize(10f);
+        setTextSize(13f);
         updateLightDarkTint();
     }
 

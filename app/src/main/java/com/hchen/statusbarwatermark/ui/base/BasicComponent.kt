@@ -186,8 +186,14 @@ fun SuperEditDialog(
         show = show,
         title = title,
         summary = summary,
-        onDismissRequest = onDismissRequest,
-        onClickCancel = onClickCancel,
+        onDismissRequest = {
+            onDismissRequest?.invoke()
+            innerText = text
+        },
+        onClickCancel = {
+            onClickCancel()
+            innerText = text
+        },
         onClickConfirm = {
             onClickConfirm()
             onTextChanged(innerText)
