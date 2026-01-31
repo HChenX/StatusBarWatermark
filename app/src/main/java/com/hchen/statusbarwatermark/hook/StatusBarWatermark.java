@@ -1,24 +1,47 @@
 package com.hchen.statusbarwatermark.hook;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.hchen.hooktool.HCBase;
 import com.hchen.hooktool.HCData;
 import com.hchen.hooktool.hook.IHook;
+import com.hchen.hooktool.utils.PrefsTool;
+import com.hchen.statusbarwatermark.data.ModuleConfig;
 import com.hchen.statusbarwatermark.data.StatusBarSlots;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.WeakHashMap;
+import java.util.function.Consumer;
 
 import dalvik.system.PathClassLoader;
 
 public class StatusBarWatermark extends HCBase {
+    private static boolean isRegistered;
+    private final WeakHashMap<TextView, Boolean> watermarkWeakHashMap = new WeakHashMap<>();
+
     @Override
     protected void init() {
+        if (!isRegistered) {
+            isRegistered = true;
+            PrefsTool.prefs().registerOnSharedPreferenceChangeListener(
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    @Override
+                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
+                        updateConfig();
+                        // AndroidLog.logW(TAG, "onSharedPreferenceChanged!! view: " + watermarkWeakHashMap);
+                    }
+                }
+            );
+        }
+
         ClassLoader myClassLoader = new PathClassLoader(HCData.getModulePath(), classLoader);
 
         hookConstructor("com.android.systemui.statusbar.phone.ui.StatusBarIconList",
@@ -68,18 +91,46 @@ public class StatusBarWatermark extends HCBase {
                         TextView watermarkView = (TextView) newInstance("com.hchen.statusbarwatermark.hook.slots.StatusBarWatermarkView", myClassLoader, context);
                         callMethod(watermarkView, "setBlocked", blocked);
                         group.addView(watermarkView, index, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                        watermarkView.setText("TEST");
+                        if (!watermarkWeakHashMap.containsKey(watermarkView)) {
+                            watermarkWeakHashMap.put(watermarkView, true);
+                        }
+                        updateConfig();
                         setResult(watermarkView);
                     }
                 }
             }
         );
+    }
+
+    private void updateConfig() {
+        watermarkWeakHashMap.keySet().forEach(new Consumer<TextView>() {
+            @Override
+            public void accept(TextView textView) {
+                if (textView != null) {
+                    textView.post(() -> {
+                        callMethod(textView, "setVisible", ModuleConfig.isShowWatermark());
+                        textView.setText(ModuleConfig.getWatermarkContent());
+                        textView.setTextSize(ModuleConfig.getWatermarkSize());
+                        // AndroidLog.logW(TAG, "Post!! v: " + textView + ", show: " + ModuleConfig.isShowWatermark());
+                    });
+                }
+            }
+        });
 
         @SuppressWarnings("unchecked")
         ArrayList<String> CONTROL_CENTER_BLOCK_LIST = (ArrayList<String>) getStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST");
-        if (!CONTROL_CENTER_BLOCK_LIST.contains(StatusBarSlots.status_bar_watermark)) {
-            CONTROL_CENTER_BLOCK_LIST.add(StatusBarSlots.status_bar_watermark);
-            setStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST", CONTROL_CENTER_BLOCK_LIST);
+        if (ModuleConfig.isShowOnControlCenter()) {
+            if (!CONTROL_CENTER_BLOCK_LIST.contains(StatusBarSlots.status_bar_watermark)) {
+                CONTROL_CENTER_BLOCK_LIST.add(StatusBarSlots.status_bar_watermark);
+                setStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST", CONTROL_CENTER_BLOCK_LIST);
+            }
+        } else {
+            if (CONTROL_CENTER_BLOCK_LIST.contains(StatusBarSlots.status_bar_watermark)) {
+                CONTROL_CENTER_BLOCK_LIST.remove(StatusBarSlots.status_bar_watermark);
+                setStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST", CONTROL_CENTER_BLOCK_LIST);
+            }
         }
+
+        // AndroidLog.logW(TAG, "UpdateConfig!!");
     }
 }

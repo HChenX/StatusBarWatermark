@@ -18,8 +18,8 @@ import java.util.ArrayList;
 public class StatusBarWatermarkView extends AppCompatTextView implements StatusIconDisplayable {
     private StatusBarIconAnimHelper helper;
     private int visibleState;
+    private boolean visible;
     private boolean blocked;
-    private boolean deemHide;
     private ArrayList<Rect> areas;
     private float darkIntensity;
     private int tint;
@@ -93,7 +93,7 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
 
     @Override
     public boolean isIconVisible() {
-        return !blocked || helper.removeFlag;
+        return (visible && !blocked) || helper.removeFlag;
     }
 
     @Override
@@ -104,6 +104,13 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
     @Override
     public void setAnimationEnable(boolean enabled) {
         helper.animateEnable = enabled;
+    }
+
+    public void setVisible(boolean visible) {
+        if (this.visible != visible) {
+            this.visible = visible;
+            updateVisibility();
+        }
     }
 
     @Override
@@ -121,12 +128,12 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
 
     @Override
     public boolean getDeemHide() {
-        return deemHide;
+        return false;
     }
 
     @Override
     public void setDeemHide(boolean deemHide) {
-        this.deemHide = deemHide;
+        // Do Nothing
     }
 
     @Override
@@ -214,11 +221,10 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
     }
 
     private void updateVisibility() {
-        if (!blocked) {
+        if (visible && !blocked) {
             if (helper.removeFlag && getVisibility() == VISIBLE) {
                 visibleState = 2;
                 setRemove(false);
-                deemHide = true;
                 requestLayout();
                 return;
             }

@@ -33,4 +33,5 @@
 -keep class com.hchen.statusbarwatermark.hook.slots.StatusBarWatermarkView {
     public <init>(android.content.Context);
     public setBlocked(boolean);
+    public setVisible(boolean);
 }
