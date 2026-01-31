@@ -39,7 +39,7 @@ android {
         minSdk 35
         targetSdk 36
         // noinspection HighAppVersionCode
-        versionCode 2026013101
+        versionCode 2026013102
         versionName "1.0"
         signingConfig signingConfigs.release
     }

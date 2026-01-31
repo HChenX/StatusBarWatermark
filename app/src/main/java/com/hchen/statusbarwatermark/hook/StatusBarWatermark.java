@@ -106,7 +106,7 @@ public class StatusBarWatermark extends HCBase {
 
         @SuppressWarnings("unchecked")
         ArrayList<String> CONTROL_CENTER_BLOCK_LIST = (ArrayList<String>) getStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST");
-        if (ModuleConfig.isShowOnControlCenter()) {
+        if (!ModuleConfig.isShowOnControlCenter()) {
             if (!CONTROL_CENTER_BLOCK_LIST.contains(StatusBarSlots.status_bar_watermark)) {
                 CONTROL_CENTER_BLOCK_LIST.add(StatusBarSlots.status_bar_watermark);
                 setStaticField("com.android.systemui.statusbar.phone.MiuiIconManagerUtils", "CONTROL_CENTER_BLOCK_LIST", CONTROL_CENTER_BLOCK_LIST);
