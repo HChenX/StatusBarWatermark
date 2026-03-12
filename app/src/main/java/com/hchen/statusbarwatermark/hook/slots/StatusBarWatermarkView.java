@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.statusbar.DarkIconDispatcherExt;
 import com.android.systemui.statusbar.StatusIconDisplayable;
+import com.android.systemui.statusbar.anim.MiuiStatusBarIconAnimatorController;
 import com.android.systemui.statusbar.anim.StatusBarIconAnimHelper;
 import com.hchen.statusbarwatermark.data.StatusBarSlots;
 
@@ -204,7 +205,14 @@ public class StatusBarWatermarkView extends AppCompatTextView implements StatusI
 
     @Override
     public void setBlurRadius(int blurRadius) {
-        helper.setBlurRadius(blurRadius);
+        try {
+            helper.setBlurRadius(blurRadius);
+        } catch (Throwable ignore) {
+            if (helper.blurRadius != blurRadius) {
+                helper.blurRadius = blurRadius;
+                MiuiStatusBarIconAnimatorController.Companion.blur(blurRadius, helper.view);
+            }
+        }
     }
 
     private final boolean hasTargetMethod = Arrays.stream(DarkIconDispatcherExt.class.getDeclaredMethods()).anyMatch(

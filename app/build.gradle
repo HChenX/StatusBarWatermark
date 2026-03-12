@@ -1,12 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.android.kotlin)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    def apk = "StatusBarWatermark"
-
     Properties properties = new Properties()
     InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
     properties.load(inputStream)
@@ -39,8 +38,8 @@ android {
         minSdk 35
         targetSdk 36
         // noinspection HighAppVersionCode
-        versionCode 2026013102
-        versionName "1.0"
+        versionCode 2026030601
+        versionName "1.1"
         signingConfig signingConfigs.release
     }
 
@@ -63,12 +62,6 @@ android {
         targetCompatibility JavaVersion.VERSION_21
     }
 
-    applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach { output ->
-            outputFileName = "${apk}-v${variant.versionName}(${variant.versionCode})_${variant.buildType.name}.apk"
-        }
-    }
-
     packagingOptions {
         resources {
             excludes += "/META-INF/**"
@@ -85,8 +78,20 @@ android {
         buildConfig true
     }
 
-    kotlinOptions {
-        jvmTarget = '21'
+    kotlin {
+        compilerOptions {
+            languageVersion = KotlinVersion.KOTLIN_2_5
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector()) { variant ->
+        variant.outputs.forEach { output ->
+            def vName = output.versionName.get()
+            def vCode = output.versionCode.get()
+            output.outputFileName.set("StatusBarWartermark-v${vName}(${vCode}).apk")
+        }
     }
 }
 
